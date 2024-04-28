@@ -14,7 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class MyListData : AppCompatActivity() {
+class MyListData : AppCompatActivity(), RecyclerViewAdapter.dataListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecyclerView.Adapter<*>
     private lateinit var layoutManager: RecyclerView.LayoutManager
@@ -74,6 +74,37 @@ class MyListData : AppCompatActivity() {
     }
 
     private fun MyRecyclerView() {
-        recyclerView.addItemDecoration(DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL))
+        //Menggunakan Layout Manager, Dan Membuat List Secara Vertical
+        layoutManager = LinearLayoutManager(this)
+        recyclerView?.layoutManager = layoutManager
+        recyclerView?.setHasFixedSize(true)
+//Membuat Underline pada Setiap Item Didalam List
+        val itemDecoration = DividerItemDecoration(applicationContext,DividerItemDecoration.VERTICAL)
+        itemDecoration.setDrawable(ContextCompat.getDrawable(applicationContext,R.drawable.line)!!)
+        recyclerView?.addItemDecoration(itemDecoration)
     }
-}
+
+    override fun onDeleteData(data: data_mahasiswa?, position: Int) {
+    /* Kode ini akan dipanggil ketika method onDeleteData dipanggil dari adapter pada
+    RecyclerView
+    * melalui interface. kemudian akan menghapus data berdasarkan primary key dari data
+    tersebut
+    * Jika berhasil, maka akan memunculkan Toast */
+    val getUserID: String = auth?.getCurrentUser()?.getUid().toString()
+    val getReference = database.getReference()
+    if(getReference != null){
+        getReference.child("Admin")
+            .child(getUserID)
+            .child("Mahasiswa")
+            .child(data?.key.toString())
+            .removeValue()
+            .addOnSuccessListener {
+                Toast.makeText(this@MyListData, "Data Berhasil Dihapus",
+                    Toast.LENGTH_SHORT).show();
+            }
+    } else
+    {
+        Toast.makeText(this@MyListData, "Referance Kosong",
+            Toast.LENGTH_SHORT).show();
+    }
+}}
