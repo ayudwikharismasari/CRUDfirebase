@@ -50,6 +50,7 @@ class MyListData : AppCompatActivity() {
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
+                            dataMahasiswa.clear()
                             for (snapshot in dataSnapshot.children) {
                                 val mahasiswa = snapshot.getValue(data_mahasiswa::class.java)
                                 mahasiswa?.key = snapshot.key
